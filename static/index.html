@@ -56,7 +56,23 @@
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="chart">
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div id="chart"></div>
+      <input type="range" class="form-range" min="10" max="500" step="10" id="maxDepth">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="onlySymmetricalVolumes">
+        <label class="form-check-label" for="onlySymmetricalVolumes" data-bs-toggle="tooltip" data-bs-placement="right" >
+          Only Symmetrical Volumes
+          <img src="./img/info-circle.svg" type="image/svg" style="opacity: 66%;" data-bs-toggle="tooltip" data-bs-placement="right" title="Ignore bids for more volume than is available on the ask side of the market. Prevents bids for extremely large quantities from distorting the view of the market.">
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="onlySymmetricalPrices">
+        <label class="form-check-label" for="onlySymmetricalPrices">
+          Only Symmetrical Prices
+          <img src="./img/info-circle.svg" type="image/svg" style="opacity: 66%;" data-bs-toggle="tooltip" data-bs-placement="right" title="Ignore bids placed at a larger discount than the highest profit margin desired on the ask side. Prevents bids placed at extremely low prices from distorting the view of the market.">
+        </label>
+      </div>
     </main>
   </div>
 </div>
@@ -77,8 +93,21 @@
   import define from "./js/index.js";
 
   const runtime = new Runtime();
-  const main = runtime.module(define, name => ([undefined, "legend", "chart"].includes(name) ? Inspector.into("#chart")(name) : undefined));
+  const defaultInspector = Inspector.into("#chart");
+  const visibleItems = [undefined, "key", "chart", "maxDepthLabel"];
+  const debug = /^\?debug$/.test(window.location.search);
+  const inspector = name => ((debug || visibleItems.includes(name)) ? defaultInspector(name) : undefined);
+
+  const main = runtime.module(define, inspector);
   
+  main.value("maxDepth").then(x => $("#maxDepth").val(x))
+
+  // Enable bootstrap tooltips
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
   // Workaround https://github.com/observablehq/stdlib/issues/165
   const fixupWidth = () => main.redefine("width", () => document.querySelector("#chart").clientWidth);
   fixupWidth();
@@ -96,6 +125,15 @@
   })
   $('#usdt-btc').click(() => {
     main.redefine("currencyPair", () => ({from: "USDT", to: "BTC"}));
+  })
+  $("#onlySymmetricalVolumes").change(event => {
+    main.redefine("onlySymmetricalVolumes", event.target.checked)
+  })
+  $("#onlySymmetricalPrices").change(event => {
+    main.redefine("onlySymmetricalPrices", event.target.checked)
+  })
+  $("#maxDepth").change(event => {
+    main.redefine("maxDepth", Number.parseInt($(event.target).val()))
   })
 </script>
 

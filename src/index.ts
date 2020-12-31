@@ -1,6 +1,5 @@
 import * as Binance from "./binance"
 import * as Bittrex from "./bittrex"
-import * as Model from "./model"
 import * as Poloniex from "./poloniex"
 
 import express from "express"
@@ -19,14 +18,11 @@ app.get("/api/:from-:to/orders", async (req, res) => {
     const symbolRegex = /^(BTC|ETH|DOGE|USDT)$/
     if (!(fromCurrency && toCurrency && symbolRegex.test(fromCurrency) && symbolRegex.test(toCurrency))) throw new Error("invalid currency symbol")
 
-    const data = ([] as Model.OrderBook).concat(
-        await Bittrex.GetOrderBook(fromCurrency, toCurrency),
-        await Poloniex.GetOrderBook(fromCurrency, toCurrency),
-        await Binance.GetOrderBook(fromCurrency, toCurrency),
-    )
-    data.sort(Model.Order.Compare)
-
-    res.json(data)
+    res.json({
+      Bittrex: await Bittrex.GetOrderBook(fromCurrency, toCurrency),
+      Poloniex: await Poloniex.GetOrderBook(fromCurrency, toCurrency),
+      Binance: await Binance.GetOrderBook(fromCurrency, toCurrency),
+    })
   } catch (e) {
     res.status(500).json({
       error: e.toString(),
