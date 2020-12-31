@@ -1,7 +1,7 @@
 {
   "name": "liquidity-chart",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "An example app which shows how to retrieve, process, and visualize data.",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "tslint -c tslint.json --project tsconfig.json",
@@ -19,5 +19,15 @@
   "dependencies": {
     "express": "^4.17.1",
     "node-fetch": "^2.6.1"
-  }
+  },
+  "author": {
+    "name": "Reid Rankin",
+    "email": "reidrankin@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reidrankin/liquidity-chart.git"
+  },
+  "homepage": "https://github.com/reidrankin/liquidity-chart#readme"
 }

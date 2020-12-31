@@ -1,3 +1,7 @@
+// These functions demonstrate advanced features of the TypeScript type system,
+// such as type inference and generics. Note how these functional operators
+// avoid erasing inferred type information from functions they are applied to.
+
 type BasicFunction = (...args: any) => any
 type FirstParameter<F extends BasicFunction> = F extends (x: infer X, ...args: any) => any ? X : never
 type OtherParameters<F extends BasicFunction> = F extends (x: any, ...args: infer P) => any ? P : never
