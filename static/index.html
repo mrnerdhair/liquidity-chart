@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">-->
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@observablehq/inspector@3/dist/inspector.css" integrity="sha256-cDgkDWP2Q9OBE1dTNyw8ogFWaN3mzl0jzSE6bvP9OYM=" crossorigin="anonymous">-->
+<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1">
+<link rel="stylesheet" type="text/css" href="./css/inspector.css"  integrity="sha256-cDgkDWP2Q9OBE1dTNyw8ogFWaN3mzl0jzSE6bvP9OYM=">
+<link rel="stylesheet" type="text/css" href="./css/dashboard.css">
+<title>Exchange Liquidity Comparison</title>
+</head>
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Exchange Liquidity Comparison</a>
+  <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#" id="btc-eth">
+              <img src="./img/eth.svg" type="image/svg" class="icon-normal">
+              <img src="./img/eth_black.svg" type="image/svg" class="icon-black">
+              BTC-ETH
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="btc-doge">
+              <img src="./img/doge.svg" type="image/svg" class="icon-normal">
+              <img src="./img/doge_black.svg" type="image/svg" class="icon-black">
+              BTC-DOGE
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="usdt-btc">
+              <img src="./img/usdt.svg" type="image/svg" class="icon-normal">
+              <img src="./img/usdt_black.svg" type="image/svg" class="icon-black">
+              USDT-BTC
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="chart">
+    </main>
+  </div>
+</div>
+
+<!--
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.3.1/d3.min.js" integrity="sha512-9H86d5lhAwgf2/u29K4N5G6pZThNOojI8kMT4nT4NHvVR02cM85M06KJRQXkI0XgQWBpzQyIyr8LVomyu1AQdw==" crossorigin="anonymous"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@observablehq/runtime@4.8.0/dist/runtime.js" integrity="sha256-gthZIScZ4xAFbQRn/F+8GInQBqfnCBbMzFMFJ0Kcx3c=" crossorigin="anonymous"></script>
+-->
+<script src="./js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"></script>
+<script src="./js/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="></script>
+<script src="./js/d3.min.js" integrity="sha512-9H86d5lhAwgf2/u29K4N5G6pZThNOojI8kMT4nT4NHvVR02cM85M06KJRQXkI0XgQWBpzQyIyr8LVomyu1AQdw=="></script>
+<script type="module" src="./js/runtime.js" integrity="sha256-gthZIScZ4xAFbQRn/F+8GInQBqfnCBbMzFMFJ0Kcx3c="></script>
+
+<script type="module">
+  import {Runtime, Library, Inspector} from "./js/runtime.js";
+  import define from "./js/index.js";
+
+  const runtime = new Runtime();
+  const main = runtime.module(define, name => ([undefined, "legend", "chart"].includes(name) ? Inspector.into("#chart")(name) : undefined));
+  
+  // Workaround https://github.com/observablehq/stdlib/issues/165
+  const fixupWidth = () => main.redefine("width", () => document.querySelector("#chart").clientWidth);
+  fixupWidth();
+  window.addEventListener("resize", fixupWidth);
+  
+  $("#sidebarMenu .nav-link").click(event => {
+    $("#sidebarMenu .nav-link").removeClass("active");
+    $(event.target).closest(".nav-link").addClass("active");
+  });
+  $('#btc-eth').click(() => {
+    main.redefine("currencyPair", () => ({from: "BTC", to: "ETH"}));
+  })
+  $('#btc-doge').click(() => {
+    main.redefine("currencyPair", () => ({from: "BTC", to: "DOGE"}));
+  })
+  $('#usdt-btc').click(() => {
+    main.redefine("currencyPair", () => ({from: "USDT", to: "BTC"}));
+  })
+</script>
+
+</body>
+</html>
